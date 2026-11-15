@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     database_url: str
     gemini_api_key: SecretStr
     gemini_model: str = "gemini-2.5-flash"
-    embedding_model: str = "text-embedding-004"
+    embedding_model: str = "gemini-embedding-001"
     embedding_dim: int = 768
     environment: Literal["local", "test", "staging", "production"] = "local"
 
