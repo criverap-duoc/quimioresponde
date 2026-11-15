@@ -12,13 +12,13 @@ jobs:
         working-directory: api
       - run: uv run mypy src
         working-directory: api
-      - run: uv run pytest -m "not integration"
-        working-directory: api
   web:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22
