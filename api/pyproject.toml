@@ -10,6 +10,11 @@ dependencies = [
     "alembic>=1.14",
     "pydantic>=2.10",
     "pydantic-settings>=2.7",
+    "pgvector>=0.5.1",
+    "httpx>=0.28.1",
+    "tenacity>=9.2.1",
+    "google-generativeai>=0.8.6",
+    "python-multipart>=0.0.33",
 ]
 
 [dependency-groups]
@@ -29,11 +34,16 @@ target-version = "py312"
 select = ["E", "F", "I", "C901", "UP", "B"]
 mccabe = { max-complexity = 10 }
 
+[tool.ruff.lint.isort]
+known-third-party = ["alembic"]
+
 [tool.mypy]
 strict = true
 python_version = "3.12"
+plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 markers = ["integration: tests que requieren Testcontainers"]
