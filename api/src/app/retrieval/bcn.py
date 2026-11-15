@@ -9,13 +9,17 @@ from bs4 import BeautifulSoup
 
 from app.retrieval.chunker import ChunkDraft, split_by_article
 
-DECRETO_43_URL = "https://www.bcn.cl/leychile/navegar?idNorma=1088802"
-DECRETO_594_URL = "https://www.bcn.cl/leychile/navegar?idNorma=167766"
+# La vista `navegar` de LeyChile es una SPA que carga el texto por JavaScript:
+# la descarga directa no trae artículos. El XML de intercambio es público,
+# estable y contiene la norma completa.
+DECRETO_43_URL = "https://www.leychile.cl/Consulta/obtxml?opt=7&idNorma=1088802"
+DECRETO_594_URL = "https://www.leychile.cl/Consulta/obtxml?opt=7&idNorma=167766"
 USER_AGENT = "QuimioResponde/0.1 (+https://github.com/criverap-duoc/quimioresponde)"
 
-_TIMEOUT = 30.0
+_TIMEOUT = 60.0
 _URLS_POR_NORMA = {"decreto_43": DECRETO_43_URL, "decreto_594": DECRETO_594_URL}
 _RUIDO = ("script", "style", "nav", "header", "footer", "aside")
+_BINARIOS = ("ArchivoBinario",)
 _ESPACIOS_RE = re.compile(r"[ \t\u00a0]+")
 _SALTOS_RE = re.compile(r"\n{3,}")
 
@@ -57,16 +61,33 @@ async def _robots_permite(client: httpx.AsyncClient, url: str) -> bool:
 
 
 def parse_html(raw: bytes, norma: str, url: str) -> list[ChunkDraft]:
-    """Extrae el texto útil del HTML de BCN y lo trocea por artículo."""
-    soup = BeautifulSoup(raw, "lxml")
-    for tag in soup(list(_RUIDO)):
-        tag.decompose()
-    texto = _ESPACIOS_RE.sub(" ", soup.get_text("\n", strip=True))
-    texto = _SALTOS_RE.sub("\n\n", texto)
+    """Extrae el texto útil de la respuesta de BCN y lo trocea por artículo."""
+    texto = _texto_xml(raw) if _es_xml(raw) else _texto_html(raw)
     drafts = split_by_article(texto, url)
     if not drafts:
         raise NormaParseError(f"No se encontraron artículos en la norma {norma}")
     return drafts
+
+
+def _es_xml(raw: bytes) -> bool:
+    return raw.lstrip().startswith(b"<?xml")
+
+
+def _texto_xml(raw: bytes) -> str:
+    soup = BeautifulSoup(raw, "xml")
+    for nodo in soup(list(_BINARIOS)):
+        nodo.decompose()
+    bloques = [nodo.get_text("\n", strip=True) for nodo in soup.find_all("Texto")]
+    texto = "\n\n".join(bloque for bloque in bloques if bloque)
+    return _SALTOS_RE.sub("\n\n", texto)
+
+
+def _texto_html(raw: bytes) -> str:
+    soup = BeautifulSoup(raw, "lxml")
+    for tag in soup(list(_RUIDO)):
+        tag.decompose()
+    texto = _ESPACIOS_RE.sub(" ", soup.get_text("\n", strip=True))
+    return _SALTOS_RE.sub("\n\n", texto)
 
 
 def extraer_url_oficial(norma: str) -> str:

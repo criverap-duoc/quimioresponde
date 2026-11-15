@@ -12,6 +12,8 @@ jobs:
         working-directory: api
       - run: uv run mypy src
         working-directory: api
+      - run: uv run pytest -m "not integration"
+        working-directory: api
   web:
     runs-on: ubuntu-latest
     steps:
