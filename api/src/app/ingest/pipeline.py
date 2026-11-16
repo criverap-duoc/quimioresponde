@@ -62,6 +62,9 @@ async def ingest_from_bytes(
         logger.info("norma ya ingestada: norma=%s version_hash=%s", norma, vhash[:12])
         return AlreadyIngested(document_id=existing_id)
 
+    # El embedding tarda minutos; con la conexión abierta ese rato, Neon la cierra por inactividad.
+    await session.close()
+
     drafts = parse_html(raw, norma, url_origen)
     vectors = await embedding_client().embed([draft.text for draft in drafts])
 

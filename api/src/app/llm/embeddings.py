@@ -1,14 +1,24 @@
 """Cliente asíncrono de embeddings sobre google-genai."""
 
+import asyncio
+
 import httpx
 from google import genai
 from google.genai import errors, types
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from app.models.chunk import EMBEDDING_DIM
 
 _BATCH_SIZE = 100
+_BATCH_PAUSE_SECONDS = 0.6
 _RETRYABLE = (errors.ServerError, httpx.TransportError)
+
+
+def _is_retryable(exc: BaseException) -> bool:
+    """Reintenta 5xx, transporte y 429; el resto de 4xx no se reintenta."""
+    return isinstance(exc, _RETRYABLE) or (
+        isinstance(exc, errors.ClientError) and exc.code == 429
+    )
 
 
 class EmbeddingError(Exception):
@@ -45,12 +55,14 @@ class EmbeddingClient:
         for start in range(0, len(texts), _BATCH_SIZE):
             batch = texts[start : start + _BATCH_SIZE]
             vectors.extend(await self._embed_batch(batch))
+            if start + _BATCH_SIZE < len(texts):
+                await asyncio.sleep(_BATCH_PAUSE_SECONDS)
         return vectors
 
     @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(multiplier=1, min=1, max=8),
-        retry=retry_if_exception_type(_RETRYABLE),
+        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=2, min=2, max=30),
+        retry=retry_if_exception(_is_retryable),
         reraise=True,
     )
     async def _embed_batch(self, batch: list[str]) -> list[list[float]]:
