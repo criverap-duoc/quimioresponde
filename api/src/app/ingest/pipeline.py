@@ -49,13 +49,20 @@ def embedding_client() -> EmbeddingClient:
 async def ingest(norma: str, url: str, session: AsyncSession) -> IngestResult:
     """Descarga, trocea y persiste una norma; idempotente por hash de versión."""
     raw = await fetch_norma(url)
+    return await ingest_from_bytes(norma, raw, url, session)
+
+
+async def ingest_from_bytes(
+    norma: str, raw: bytes, url_origen: str, session: AsyncSession
+) -> IngestResult:
+    """Trocea y persiste una norma ya descargada; idempotente por hash de versión."""
     vhash = version_hash(raw)
     existing_id = await session.scalar(select(Document.id).where(Document.version_hash == vhash))
     if existing_id is not None:
         logger.info("norma ya ingestada: norma=%s version_hash=%s", norma, vhash[:12])
         return AlreadyIngested(document_id=existing_id)
 
-    drafts = parse_html(raw, norma, url)
+    drafts = parse_html(raw, norma, url_origen)
     vectors = await embedding_client().embed([draft.text for draft in drafts])
 
     document = Document(
@@ -63,7 +70,7 @@ async def ingest(norma: str, url: str, session: AsyncSession) -> IngestResult:
         norma=norma,
         version_hash=vhash,
         vigente=True,
-        url=url,
+        url=url_origen,
         raw_text=raw.decode("utf-8", errors="replace"),
     )
     session.add(document)

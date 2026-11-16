@@ -1,0 +1,59 @@
+# Casos de citas: respuestas fabricadas contra hits fabricados; verifica el verificador.
+- id: c001
+  description: "cita literal de un chunk recuperado"
+  expected: "accepted"
+  answer: "Las sustancias incompatibles deben separarse por barrera física o 2.4 m."
+  citations:
+    - chunk_id: "11111111-1111-4111-8111-111111111111"
+      quote: "separadas por alguna barrera física o una distancia de 2.4 m"
+  refusal_reason: null
+  hits:
+    - chunk_id: "11111111-1111-4111-8111-111111111111"
+      article: "Artículo 22"
+      text: "Artículo 22.- Las sustancias incompatibles deberán estar separadas por alguna barrera física o una distancia de 2.4 m y no podrán compartir el mismo sistema de contención de derrames."
+- id: c002
+  description: "cita a un chunk que no está entre los recuperados"
+  expected: "unknown_chunk"
+  answer: "Las sustancias incompatibles deben separarse 2.4 m."
+  citations:
+    - chunk_id: "00000000-0000-4000-8000-000000000000"
+      quote: "separadas por alguna barrera física o una distancia de 2.4 m"
+  refusal_reason: null
+  hits:
+    - chunk_id: "11111111-1111-4111-8111-111111111111"
+      article: "Artículo 22"
+      text: "Artículo 22.- Las sustancias incompatibles deberán estar separadas por alguna barrera física o una distancia de 2.4 m y no podrán compartir el mismo sistema de contención de derrames."
+- id: c003
+  description: "quote que no es subcadena literal del chunk"
+  expected: "unverifiable_quote"
+  answer: "Las sustancias incompatibles deben separarse cinco metros."
+  citations:
+    - chunk_id: "11111111-1111-4111-8111-111111111111"
+      quote: "separadas por un muro de hormigón de cinco metros"
+  refusal_reason: null
+  hits:
+    - chunk_id: "11111111-1111-4111-8111-111111111111"
+      article: "Artículo 22"
+      text: "Artículo 22.- Las sustancias incompatibles deberán estar separadas por alguna barrera física o una distancia de 2.4 m y no podrán compartir el mismo sistema de contención de derrames."
+- id: c004
+  description: "rechazo declarado que además trae citas"
+  expected: "refusal_with_citations"
+  answer: "No puedo emitir un dictamen, pero el reglamento exige separar incompatibles."
+  citations:
+    - chunk_id: "11111111-1111-4111-8111-111111111111"
+      quote: "separadas por alguna barrera física o una distancia de 2.4 m"
+  refusal_reason: "no_emite_dictamen"
+  hits:
+    - chunk_id: "11111111-1111-4111-8111-111111111111"
+      article: "Artículo 22"
+      text: "Artículo 22.- Las sustancias incompatibles deberán estar separadas por alguna barrera física o una distancia de 2.4 m y no podrán compartir el mismo sistema de contención de derrames."
+- id: c005
+  description: "respuesta sin citas y sin motivo de rechazo"
+  expected: "no_citations"
+  answer: "Las sustancias incompatibles deben separarse 2.4 m."
+  citations: []
+  refusal_reason: null
+  hits:
+    - chunk_id: "11111111-1111-4111-8111-111111111111"
+      article: "Artículo 22"
+      text: "Artículo 22.- Las sustancias incompatibles deberán estar separadas por alguna barrera física o una distancia de 2.4 m y no podrán compartir el mismo sistema de contención de derrames."

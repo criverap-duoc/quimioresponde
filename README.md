@@ -36,3 +36,23 @@ Frontend:
 Desde la raíz:
 
     make check
+
+## Evals
+
+    make evals
+
+Corre 20 casos offline (10 de recuperación, 5 de rechazo, 5 de citas) contra `evals/fixtures/retrieval_golden.json`, que está versionado. Es lo que corre CI: no usa red ni base de datos.
+
+Para regenerar el golden —manual, con `DATABASE_URL` apuntando a una base con el Decreto 43 cargado y `GEMINI_API_KEY` en `api/.env`—:
+
+    cd evals
+    uv sync
+    uv run python -m harness.run --online
+
+Si cambia el corpus o el troceador, regenera el golden; los `expected_chunk_id` de `evals/cases/retrieval.yaml` se actualizan con los ids que imprime `--online`.
+
+## Tests de integración
+
+    make test-int
+
+Requieren Docker: pytest levanta Postgres con pgvector mediante Testcontainers.

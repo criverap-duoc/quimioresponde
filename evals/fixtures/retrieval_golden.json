@@ -1,0 +1,326 @@
+{
+  "generated_at": "2026-11-16T23:09:17+00:00",
+  "k": 5,
+  "results": {
+    "r001": [
+      {
+        "chunk_id": "ff63ec2d-c587-43cb-8746-c46c928e7aeb",
+        "article": "Artículo 29",
+        "numeral": null,
+        "score": 0.016393
+      },
+      {
+        "chunk_id": "356bec04-a315-4785-a3b4-499f4f6aa4e6",
+        "article": "Artículo 16",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "5fba3682-e0eb-4740-989e-ae265da89d1c",
+        "article": "Artículo 83",
+        "numeral": null,
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "3c9770e9-9c0c-40dc-81a0-9938f6954775",
+        "article": "Artículo 174",
+        "numeral": null,
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "5c720026-8c9b-450d-a899-eae95524436e",
+        "article": "Artículo 91",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ],
+    "r002": [
+      {
+        "chunk_id": "eadf2c3f-3366-4c49-af13-43c4c0381c87",
+        "article": "Artículo 40",
+        "numeral": null,
+        "score": 0.032787
+      },
+      {
+        "chunk_id": "7349ed0d-8187-4b96-bb73-28e31273663d",
+        "article": "Artículo 38",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "c0dec51c-114b-4c01-aa89-90cadd6f9441",
+        "article": "Artículo 60",
+        "numeral": null,
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "2eaf136f-88de-4c7f-8875-cb418766a7ba",
+        "article": "Artículo 59",
+        "numeral": null,
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "aa9108a0-7e79-46c8-bb28-8d1f866278b3",
+        "article": "Artículo 66",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ],
+    "r003": [
+      {
+        "chunk_id": "5a594622-b003-483c-aff3-749f2146512f",
+        "article": "Artículo 30",
+        "numeral": null,
+        "score": 0.016393
+      },
+      {
+        "chunk_id": "22cd6f05-8d55-41e7-bd6c-c96f368afa1a",
+        "article": "Artículo 170",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "5d925b44-30cf-49f5-8b36-678931424736",
+        "article": "artículo 8",
+        "numeral": "b)",
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "58ad9279-2925-44a3-a8e6-fb21c0441d60",
+        "article": "Artículo 33",
+        "numeral": null,
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "3b0893a7-c239-45b4-aa01-21fe5472372f",
+        "article": "Artículo 116",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ],
+    "r004": [
+      {
+        "chunk_id": "24d45bf5-fbca-411b-a72b-5f6f16090118",
+        "article": "Artículo 17",
+        "numeral": null,
+        "score": 0.032787
+      },
+      {
+        "chunk_id": "9fb3fc02-6857-4bcf-9d6d-7a3129dd6d7e",
+        "article": "Artículo 55",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "22d936b9-de41-4618-afb6-bb3099b3b21f",
+        "article": "Artículo 22",
+        "numeral": null,
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "a8f49f05-0741-4e2b-a392-8f00002b810d",
+        "article": "artículo 8",
+        "numeral": "c)",
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "17ef2677-d970-4ec9-bf65-4f5005d4a6bf",
+        "article": "Artículo 46",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ],
+    "r005": [
+      {
+        "chunk_id": "aea05c48-4865-4c5f-886e-4adb6336b485",
+        "article": "Artículo 69",
+        "numeral": null,
+        "score": 0.016393
+      },
+      {
+        "chunk_id": "2b044045-1b14-487f-ad5b-6fcd8104ecd3",
+        "article": "Artículo 75",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "aa9108a0-7e79-46c8-bb28-8d1f866278b3",
+        "article": "Artículo 66",
+        "numeral": null,
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "776de718-82f7-478c-898c-b05eee6f5ad1",
+        "article": "Artículo 74",
+        "numeral": null,
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "6798e2b8-2583-48e5-8db2-55c4eb617cd1",
+        "article": "Artículo 72",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ],
+    "r006": [
+      {
+        "chunk_id": "41088959-9a30-4abd-b0cf-78a7b0ed13ed",
+        "article": "Artículo 31",
+        "numeral": null,
+        "score": 0.016393
+      },
+      {
+        "chunk_id": "5f370948-9eb0-4c3f-8c51-44827cdf120d",
+        "article": "Artículo 51",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "d638c090-161d-4636-8d31-26c32f36fac6",
+        "article": "Artículo 176",
+        "numeral": null,
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "c45ab9ae-c4e6-4f1e-8bbc-dcf3ec729b07",
+        "article": "Artículo 35",
+        "numeral": null,
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "bf5791b0-9649-4395-ac90-30406a83d4e0",
+        "article": "Artículo 171",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ],
+    "r007": [
+      {
+        "chunk_id": "4f37e18e-9fe6-422a-9f4b-905c6e280931",
+        "article": "Artículo 18",
+        "numeral": null,
+        "score": 0.016393
+      },
+      {
+        "chunk_id": "5a594622-b003-483c-aff3-749f2146512f",
+        "article": "Artículo 30",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "5d925b44-30cf-49f5-8b36-678931424736",
+        "article": "artículo 8",
+        "numeral": "b)",
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "58ad9279-2925-44a3-a8e6-fb21c0441d60",
+        "article": "Artículo 33",
+        "numeral": null,
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "aa81ccd6-5d40-48cc-810c-97043237a146",
+        "article": "Artículo 11",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ],
+    "r008": [
+      {
+        "chunk_id": "c45ab9ae-c4e6-4f1e-8bbc-dcf3ec729b07",
+        "article": "Artículo 35",
+        "numeral": null,
+        "score": 0.031754
+      },
+      {
+        "chunk_id": "a3279670-1b25-4585-98ed-6e524db2e7f4",
+        "article": "Artículo 53",
+        "numeral": null,
+        "score": 0.03101
+      },
+      {
+        "chunk_id": "960b874f-8c91-49e5-8770-59b5e02fb4b3",
+        "article": "artículo 44",
+        "numeral": null,
+        "score": 0.027056
+      },
+      {
+        "chunk_id": "3b65b662-d5aa-4307-9e28-3fc4babd9fbc",
+        "article": "Artículo 4°",
+        "numeral": "e)",
+        "score": 0.016393
+      },
+      {
+        "chunk_id": "07999828-459e-4bf7-bafe-398dc437ab4d",
+        "article": "Artículo 5°",
+        "numeral": null,
+        "score": 0.016393
+      }
+    ],
+    "r009": [
+      {
+        "chunk_id": "9a4e9c34-87a6-448e-add2-563d226c3316",
+        "article": "Artículo 118",
+        "numeral": null,
+        "score": 0.016393
+      },
+      {
+        "chunk_id": "aa81ccd6-5d40-48cc-810c-97043237a146",
+        "article": "Artículo 11",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "4de30a89-0032-4c25-8fed-f8aa5b96c500",
+        "article": "Artículo 151",
+        "numeral": null,
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "c3bba87b-bc68-420a-8596-ecf9c887decf",
+        "article": "Artículo 12",
+        "numeral": null,
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "dc2adaf8-1e15-4026-872e-fee29f476b20",
+        "article": "Artículo 149",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ],
+    "r010": [
+      {
+        "chunk_id": "1c20ffec-918b-4f69-b080-8b9e93906a94",
+        "article": "Artículo 61",
+        "numeral": null,
+        "score": 0.016393
+      },
+      {
+        "chunk_id": "20bf5c71-5023-4d80-8052-8016c0c5a5e7",
+        "article": "Artículo 113",
+        "numeral": null,
+        "score": 0.016129
+      },
+      {
+        "chunk_id": "8f105c7a-42ef-4024-a725-48a3cef9a6d0",
+        "article": "artículo 61",
+        "numeral": null,
+        "score": 0.015873
+      },
+      {
+        "chunk_id": "5f40b898-c066-4dce-9dc9-48e92ca081ea",
+        "article": "Artículo 161",
+        "numeral": null,
+        "score": 0.015625
+      },
+      {
+        "chunk_id": "9fb3fc02-6857-4bcf-9d6d-7a3129dd6d7e",
+        "article": "Artículo 55",
+        "numeral": null,
+        "score": 0.015385
+      }
+    ]
+  }
+}

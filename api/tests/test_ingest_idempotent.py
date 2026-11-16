@@ -1,15 +1,12 @@
 """Ingesta idempotente contra Postgres con pgvector (Testcontainers)."""
 
-from collections.abc import AsyncIterator, Iterator
 from pathlib import Path
 
 import pytest
-from sqlalchemy import func, select, text
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from testcontainers.community.postgres import PostgresContainer
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings
-from app.db import Base
 from app.ingest import pipeline
 from app.llm.embeddings import EmbeddingClient
 from app.models.chunk import EMBEDDING_DIM, Chunk
@@ -21,24 +18,6 @@ from app.retrieval.hashing import idempotency_key, version_hash
 pytestmark = pytest.mark.integration
 
 _FIXTURE = Path(__file__).parent / "fixtures" / "bcn_decreto43_articulo.html"
-
-
-@pytest.fixture(scope="module")
-def postgres_url() -> Iterator[str]:
-    with PostgresContainer("pgvector/pgvector:pg16", driver="asyncpg") as container:
-        yield container.get_connection_url()
-
-
-@pytest.fixture
-async def session(postgres_url: str) -> AsyncIterator[AsyncSession]:
-    engine = create_async_engine(postgres_url)
-    async with engine.begin() as connection:
-        await connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-        await connection.run_sync(Base.metadata.create_all)
-    maker = async_sessionmaker(engine, expire_on_commit=False)
-    async with maker() as session:
-        yield session
-    await engine.dispose()
 
 
 async def test_ingest_is_idempotent_by_version_hash(

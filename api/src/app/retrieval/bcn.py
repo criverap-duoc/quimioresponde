@@ -1,6 +1,7 @@
 """Descarga y troceo por artículo de normas publicadas en LeyChile (BCN)."""
 
 import re
+from pathlib import Path
 from urllib.parse import urljoin
 from urllib.robotparser import RobotFileParser
 
@@ -17,6 +18,8 @@ DECRETO_594_URL = "https://www.leychile.cl/Consulta/obtxml?opt=7&idNorma=167766"
 USER_AGENT = "QuimioResponde/0.1 (+https://github.com/criverap-duoc/quimioresponde)"
 
 _TIMEOUT = 60.0
+_API_ROOT = Path(__file__).resolve().parents[3]
+DECRETO_43_FIXTURE_PATH = _API_ROOT / "tests" / "fixtures" / "bcn_decreto43_articulo.html"
 _URLS_POR_NORMA = {"decreto_43": DECRETO_43_URL, "decreto_594": DECRETO_594_URL}
 _RUIDO = ("script", "style", "nav", "header", "footer", "aside")
 _BINARIOS = ("ArchivoBinario",)
@@ -96,3 +99,12 @@ def extraer_url_oficial(norma: str) -> str:
         return _URLS_POR_NORMA[norma]
     except KeyError:
         raise ValueError(f"Norma desconocida: {norma}") from None
+
+
+def cargar_fixture(norma: str) -> tuple[bytes, str]:
+    """Devuelve el XML de prueba de BCN y su URL oficial para `decreto_43`."""
+    if norma != "decreto_43":
+        raise FileNotFoundError(
+            f"fixture no disponible para {norma}; use la API real cuando la key esté activa"
+        )
+    return DECRETO_43_FIXTURE_PATH.read_bytes(), DECRETO_43_URL

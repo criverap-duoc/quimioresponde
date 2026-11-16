@@ -27,7 +27,11 @@ dist/
 # Artefactos del proyecto
 evals/reports/*.json
 evals/fixtures/*.json
+!evals/fixtures/retrieval_golden.json
 !evals/fixtures/.gitkeep
+
+# Scripts manuales locales (bootstrap_corpus.py no se versiona)
+api/scripts/
 
 # SO
 .DS_Store

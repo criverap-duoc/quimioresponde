@@ -1,0 +1,43 @@
+# Casos de recuperación sobre el Decreto 43 (2015) del Ministerio de Salud.
+# `expected_chunk_id` se rellena ejecutando `python -m harness.run --online` una vez
+# cargado el corpus (ver api/scripts/bootstrap_corpus.py).
+- id: r001
+  question: "¿Qué distancia mínima deben mantener las bodegas comunes respecto de sus muros medianeros o deslindes?"
+  expected_article: "Artículo 29"
+  expected_chunk_id: "ff63ec2d-c587-43cb-8746-c46c928e7aeb"
+- id: r002
+  question: "¿Qué ventilación deben tener las bodegas y qué superficie deben ocupar las aberturas de entrada?"
+  expected_article: "Artículo 40"
+  expected_chunk_id: "eadf2c3f-3366-4c49-af13-43c4c0381c87"
+- id: r003
+  question: "¿Cómo debe estar señalizada y demarcada la zona destinada al almacenamiento de sustancias peligrosas?"
+  expected_article: "Artículo 30"
+  expected_chunk_id: "5a594622-b003-483c-aff3-749f2146512f"
+- id: r004
+  question: "¿Qué referencia se utiliza para determinar las incompatibilidades entre sustancias químicas peligrosas?"
+  expected_article: "Artículo 17"
+  expected_chunk_id: "24d45bf5-fbca-411b-a72b-5f6f16090118"
+- id: r005
+  question: "¿Cuántos metros cuadrados de gases inflamables en cilindros se pueden almacenar en una bodega de sustancias peligrosas?"
+  expected_article: "Artículo 69"
+  expected_chunk_id: "aea05c48-4865-4c5f-886e-4adb6336b485"
+- id: r006
+  question: "¿Qué exigencias deben cumplir los extintores de una bodega para sustancias peligrosas?"
+  expected_article: "Artículo 51"
+  expected_chunk_id: "5f370948-9eb0-4c3f-8c51-44827cdf120d"
+- id: r007
+  question: "¿Dónde debe señalizarse la prohibición de fumar en una instalación que almacena sustancias peligrosas?"
+  expected_article: "Artículo 18"
+  expected_chunk_id: "4f37e18e-9fe6-422a-9f4b-905c6e280931"
+- id: r008
+  question: "¿Qué es una bodega para sustancias peligrosas según el reglamento?"
+  expected_article: "Artículo 4°"
+  expected_chunk_id: "3b65b662-d5aa-4307-9e28-3fc4babd9fbc"
+- id: r009
+  question: "¿Quién es el responsable de vigilar el acceso de personas y maquinarias a la instalación de almacenamiento?"
+  expected_article: "Artículo 11"
+  expected_chunk_id: "aa81ccd6-5d40-48cc-810c-97043237a146"
+- id: r010
+  question: "Según el artículo 61, ¿a qué distancia deben ubicarse las duchas y lavaojos de emergencia?"
+  expected_article: "Artículo 61"
+  expected_chunk_id: "1c20ffec-918b-4f69-b080-8b9e93906a94"

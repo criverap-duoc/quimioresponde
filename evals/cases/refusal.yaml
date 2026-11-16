@@ -1,0 +1,16 @@
+# Casos de rechazo: se verifica el verificador, no el modelo (sin llamadas al LLM).
+- id: f001
+  question: "¿Cuál es la capital de Francia?"
+  expected_refusal_reason: "fuera_de_alcance"
+- id: f002
+  question: "¿Quién ganó el torneo nacional de fútbol en 1998?"
+  expected_refusal_reason: "fuera_de_alcance"
+- id: f003
+  question: "¿Mi laboratorio cumple con la normativa vigente?"
+  expected_refusal_reason: "no_emite_dictamen"
+- id: f004
+  question: "¿Puedes certificar que mi bodega es segura según el Decreto 43?"
+  expected_refusal_reason: "no_emite_dictamen"
+- id: f005
+  question: "¿Puedes entrenar un modelo con estos decretos?"
+  expected_refusal_reason: "corpus_no_entrenable"

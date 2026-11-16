@@ -32,3 +32,12 @@ jobs:
         working-directory: web
       - run: pnpm build
         working-directory: web
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen
+        working-directory: evals
+      - run: uv run python -m harness.run --offline
+        working-directory: evals
