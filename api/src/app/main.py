@@ -1,4 +1,4 @@
-"""Aplicación FastAPI con healthchecks de liveness y readiness."""
+"""Aplicación FastAPI: healthchecks, CORS estricto, rate limiting y worker de ingesta."""
 
 import asyncio
 import logging
@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from sqlalchemy import text
@@ -15,25 +16,42 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.config import get_settings
 from app.db import get_engine
 from app.errors import install_error_handlers, problem
+from app.ingest.worker import start_worker
+from app.routes.chat import limiter, router
 
 _DB_TIMEOUT = 2.0
 _WARM_TIMEOUT = 10.0
+_WEB_ORIGINS = ["http://localhost:5173"]  # Vite dev; el dominio de Vercel se añade al desplegar
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    """Calienta el pool: el handshake de Neon (3-6 s) excede el timeout de 2 s de /readyz."""
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Calienta el pool, arranca el worker de ingesta y lo cancela al apagar."""
     try:
         async with asyncio.timeout(_WARM_TIMEOUT), get_engine().connect() as conn:
             await conn.execute(text("SELECT 1"))
     except Exception as exc:  # best-effort: la app arranca aunque Neon esté caído
         logger.warning("warm del pool falló: %s", exc)
-    yield
+    # La cola es en memoria: cancelar pierde los jobs pendientes; en Fase 4 (SQS) se reencolan.
+    app.state.worker_task = await start_worker()
+    try:
+        yield
+    finally:
+        app.state.worker_task.cancel()
+        await asyncio.gather(app.state.worker_task, return_exceptions=True)
 
 
 app = FastAPI(title="QuimioResponde API", version="0.1.0", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_WEB_ORIGINS,
+    allow_methods=["GET", "POST"],
+    allow_headers=["content-type"],
+)
 install_error_handlers(app)
+app.include_router(router)
 
 
 @app.get("/healthz")

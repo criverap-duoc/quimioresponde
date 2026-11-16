@@ -1,18 +1,32 @@
 """Errores HTTP en formato `application/problem+json` (RFC 9457)."""
 
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, cast
 
 from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from starlette.types import ExceptionHandler
 
 from app.llm.client import LLMRateLimited, LLMResponseError, LLMUnavailable
 from app.retrieval.bcn import NormaFetchError, NormaParseError
 
 CONTENT_TYPE = "application/problem+json"
+
+
+def problem_body(
+    request: Request, status: int, kind: str, title: str, detail: Any
+) -> dict[str, Any]:
+    """Cuerpo RFC 9457 con la ruta como `instance`."""
+    return {
+        "type": kind,
+        "title": title,
+        "status": status,
+        "detail": detail,
+        "instance": request.url.path,
+    }
 
 
 def problem(
@@ -24,14 +38,12 @@ def problem(
     headers: Mapping[str, str] | None = None,
 ) -> JSONResponse:
     """Construye una respuesta de problema con la ruta como `instance`."""
-    body = {
-        "type": kind,
-        "title": title,
-        "status": status,
-        "detail": detail,
-        "instance": request.url.path,
-    }
-    return JSONResponse(body, status_code=status, media_type=CONTENT_TYPE, headers=headers)
+    return JSONResponse(
+        problem_body(request, status, kind, title, detail),
+        status_code=status,
+        media_type=CONTENT_TYPE,
+        headers=headers,
+    )
 
 
 async def _validation(request: Request, exc: Exception) -> JSONResponse:
@@ -47,6 +59,16 @@ async def _rate_limited(request: Request, exc: Exception) -> JSONResponse:
     )
 
 
+async def _slowapi_rate_limited(request: Request, exc: Exception) -> JSONResponse:
+    """429 de slowapi con `Retry-After` de la ventana agotada."""
+    limit = cast(Any, exc).limit
+    retry_after = limit.limit.get_expiry() if limit is not None else None
+    headers = {"Retry-After": str(retry_after)} if retry_after is not None else None
+    return problem(
+        request, 429, "rate_limited", "Límite de uso alcanzado", "Reintenta más tarde.", headers
+    )
+
+
 def _fixed(status: int, kind: str, title: str, detail: str | None = None) -> ExceptionHandler:
     async def handle(request: Request, exc: Exception) -> JSONResponse:
         return problem(request, status, kind, title, detail or str(exc))
@@ -57,6 +79,7 @@ def _fixed(status: int, kind: str, title: str, detail: str | None = None) -> Exc
 def install_error_handlers(app: FastAPI) -> None:
     """Registra los handlers tipados de la API."""
     app.add_exception_handler(RequestValidationError, _validation)
+    app.add_exception_handler(RateLimitExceeded, _slowapi_rate_limited)
     app.add_exception_handler(LLMRateLimited, _rate_limited)
     app.add_exception_handler(
         LLMUnavailable,
