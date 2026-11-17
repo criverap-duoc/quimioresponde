@@ -6,6 +6,7 @@ import httpx
 from google import genai
 from google.genai import errors, types
 from pydantic import BaseModel, ValidationError
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 _MAX_RAW = 500
 
@@ -38,6 +39,13 @@ class LLMClient(Protocol):
         ...
 
 
+def _is_retryable(exc: BaseException) -> bool:
+    """Solo 5xx del servidor y 429 son transitorios para la API."""
+    if isinstance(exc, errors.ServerError):
+        return True
+    return isinstance(exc, errors.ClientError) and exc.code == 429
+
+
 class GeminiClient:
     """Adaptador de Gemini con salida JSON validada por Pydantic."""
 
@@ -48,14 +56,7 @@ class GeminiClient:
     async def complete(self, prompt: str, schema: type[BaseModel]) -> BaseModel:
         """Pide una respuesta JSON con `schema` y la devuelve ya parseada."""
         try:
-            response = await self._client.aio.models.generate_content(
-                model=self._model,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=_gemini_schema(schema),
-                ),
-            )
+            response = await self._generate(prompt, schema)
         except errors.APIError as exc:
             raise _translate(exc) from exc
         except httpx.TransportError as exc:
@@ -67,6 +68,25 @@ class GeminiClient:
             return schema.model_validate_json(raw)
         except ValidationError as exc:
             raise LLMResponseError(f"respuesta no válida: {raw[:_MAX_RAW]}") from exc
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=8),
+        retry=retry_if_exception(_is_retryable),
+        reraise=True,
+    )
+    async def _generate(
+        self, prompt: str, schema: type[BaseModel]
+    ) -> types.GenerateContentResponse:
+        """Llama a Gemini; 5xx y 429 se reintentan, el resto de errores sube tal cual."""
+        return await self._client.aio.models.generate_content(
+            model=self._model,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=_gemini_schema(schema),
+            ),
+        )
 
 
 def _gemini_schema(model: type[BaseModel]) -> Any:

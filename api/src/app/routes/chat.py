@@ -72,8 +72,9 @@ async def _stream_answer(
     citations = [citation.model_dump() for citation in answer.citations]
     yield {"event": "citations", "data": json.dumps(citations, ensure_ascii=False)}
     # Troceado artificial para la UX: el LLM ya terminó. Streaming real del SDK, en Fase 3.
-    for start in range(0, len(answer.answer), _CHUNK_SIZE):
-        yield {"event": "answer", "data": answer.answer[start : start + _CHUNK_SIZE]}
+    text = answer.answer if answer.answer else (answer.refusal_reason or "")
+    for start in range(0, len(text), _CHUNK_SIZE):
+        yield {"event": "answer", "data": text[start : start + _CHUNK_SIZE]}
     # El SDK aún no expone uso de tokens estable; se rellena en Fase 3.
     yield {"event": "done", "data": "{}"}
     await _record_trace(request_id, question, answer)
