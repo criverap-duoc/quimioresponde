@@ -13,6 +13,7 @@ from app.models.chunk import Chunk
 from app.models.document import Document
 from app.models.ingest_job import IngestJob, IngestJobStatus
 from app.retrieval.bcn import fetch_norma, parse_html
+from app.retrieval.chunker import ChunkDraft
 from app.retrieval.hashing import idempotency_key, version_hash
 
 logger = logging.getLogger(__name__)
@@ -67,7 +68,29 @@ async def ingest_from_bytes(
 
     drafts = parse_html(raw, norma, url_origen)
     vectors = await embedding_client().embed([draft.text for draft in drafts])
+    document_id = await _persist(
+        session,
+        norma=norma,
+        vhash=vhash,
+        url_origen=url_origen,
+        raw=raw,
+        chunks=list(zip(drafts, vectors, strict=True)),
+    )
 
+    logger.info("norma ingestada: norma=%s chunks=%d", norma, len(drafts))
+    return Ingested(document_id=document_id, chunks_count=len(drafts))
+
+
+async def _persist(
+    session: AsyncSession,
+    *,
+    norma: str,
+    vhash: str,
+    url_origen: str,
+    raw: bytes,
+    chunks: list[tuple[ChunkDraft, list[float]]],
+) -> uuid.UUID:
+    """Escribe documento, chunks y job de ingesta en una sola transacción."""
     document = Document(
         source=SOURCE_BCN,
         norma=norma,
@@ -89,13 +112,11 @@ async def ingest_from_bytes(
                 embedding=vector,
                 url=draft.url,
             )
-            for draft, vector in zip(drafts, vectors, strict=True)
+            for draft, vector in chunks
         ]
     )
     session.add(
         IngestJob(idempotency_key=idempotency_key(norma, vhash), status=IngestJobStatus.DONE)
     )
     await session.commit()
-
-    logger.info("norma ingestada: norma=%s chunks=%d", norma, len(drafts))
-    return Ingested(document_id=document_id, chunks_count=len(drafts))
+    return document_id

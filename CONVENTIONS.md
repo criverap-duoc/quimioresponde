@@ -2,7 +2,11 @@
 
 ## Ramas y commits
 
-`main` protegida. Ramas `feat/…`, `fix/…`, `chore/…`. Commits convencionales (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`). Un commit por receta, solo si hay cambios de código o configuración; nunca commits vacíos ni prompts individuales de commit. El commit incluye el cambio y, si aplica, la actualización de docs.
+`main` es la rama de integración (sin branch protection en Fase 1–3, ver más abajo). Ramas `feat/…`, `fix/…`, `chore/…`. Commits convencionales (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`). Un commit por receta, solo si hay cambios de código o configuración; nunca commits vacíos ni prompts individuales de commit. El commit incluye el cambio y, si aplica, la actualización de docs.
+
+## Branch protection
+
+Durante Fase 1–3, `main` no tiene branch protection porque el proyecto es unipersonal. A partir de Fase 4 (despliegue AWS), activar branch protection y exigir PR + CI verde para mergear.
 
 ## Python (api, evals)
 
@@ -24,7 +28,7 @@ Archivos ≤ 300 líneas, funciones ≤ 40, complejidad ciclomática ≤ 10 (`ru
 
 ## Secretos
 
-Solo en variables de entorno. Jamás en README, issues, capturas ni código. `.env.example` sin valores reales.
+Solo en variables de entorno. Jamás en README, issues, capturas ni código. `.env` nunca se commitea (está en `.gitignore`). `.env.example` sí se versiona, con las claves documentadas y los valores vacíos.
 
 ## Documentación
 

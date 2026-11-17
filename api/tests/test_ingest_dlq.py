@@ -14,7 +14,7 @@ class _StubSession:
     async def __aenter__(self) -> "_StubSession":
         return self
 
-    async def __aexit__(self, *exc_info: object) -> None:
+    async def __aexit__(self, *_args: object) -> None:
         return None
 
 
