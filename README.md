@@ -20,14 +20,8 @@ Asistente técnico **referencial** de seguridad en laboratorios químicos para C
 
 ## Capturas
 
-<!-- TODO: capturas — añadir estas imágenes en docs/screenshots/ antes del despliegue.
-![Chat con citas verificables](docs/screenshots/chat-citas.png)
-![Cita expandida con el artículo de LeyChile](docs/screenshots/cita-expandida.png)
-![Rechazo por falta de evidencia](docs/screenshots/sin-evidencia.png)
-![Streaming de la respuesta](docs/screenshots/streaming.gif)
--->
-
-Pendiente: las tres capturas y el GIF se añaden antes del despliegue.
+### Uso básico - Pregunta específica - Pregunta fuera del alcance - Pregunta respondida con evidencia verificable
+![Uso básico QuimioResponde](docs/screenshots/QuimioResponde1.jpg)
 
 ## Cómo correr localmente
 
