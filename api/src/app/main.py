@@ -21,7 +21,10 @@ from app.routes.chat import limiter, router
 
 _DB_TIMEOUT = 2.0
 _WARM_TIMEOUT = 10.0
-_WEB_ORIGINS = ["http://localhost:5173", "https://quimioresponde.vercel.app"]  # Vite dev; el dominio de Vercel se añade al desplegar
+_WEB_ORIGINS = [
+    "http://localhost:5173",
+    "https://quimioresponde.vercel.app",
+]
 logger = logging.getLogger(__name__)
 
 
