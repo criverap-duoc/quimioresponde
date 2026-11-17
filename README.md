@@ -2,12 +2,12 @@
 
 Asistente técnico **referencial** de seguridad en laboratorios químicos para Chile: responde preguntas sobre normativa vigente con citas literales verificables y rechaza explícitamente cuando el corpus no cubre la pregunta.
 
-![ci](https://github.com/criverap-duoc/quimioresponde/actions/workflows/ci.yml/badge.svg)
+![ci](https://github.com/criverap-duoc/quimioresponde/actions/workflows/ci.yml/badge.svg?branch=main)
 
 ## Qué hace
 
 1. **Responde con el artículo exacto.** Preguntas como «¿qué exige el Decreto 43 para almacenar líquidos inflamables?» se responden con citas numeradas; cada cita muestra la frase literal del artículo y el enlace a LeyChile. La verificación es determinista: si la cita no es subcadena del chunk recuperado, la respuesta no se entrega.
-2. **Rechaza cuando no hay evidencia.** Si ningún fragmento del corpus trata el tema, o si la pregunta pide un dictamen de cumplimiento, la UI muestra «Sin evidencia verificable» con el motivo (`no_citations`, `unverifiable_quote`, `unknown_chunk`, `refusal_with_citations`). No se inventa normativa.
+2. **Rechaza cuando no hay evidencia.** Si ningún fragmento del corpus trata el tema, o si la pregunta pide un dictamen de cumplimiento, la UI muestra el motivo del rechazo (`no_citations`, `unverifiable_quote`, `unknown_chunk`, `refusal_with_citations`) y el texto que el modelo generó. No se inventa normativa.
 3. **Ingesta idempotente de normas.** El XML de la BCN se trocea por artículo y numeral; el hash de versión evita duplicar documentos y chunks al recargar la misma norma. Una cola acotada con reintentos manda los jobs agotados a una DLQ en memoria.
 
 ## Límites
@@ -15,12 +15,12 @@ Asistente técnico **referencial** de seguridad en laboratorios químicos para C
 - Resultado **referencial**: no dictamina cumplimiento ni certifica seguridad.
 - Sin evidencia en el corpus → «no encontrado».
 - Solo lectura sobre ChemLab en v1 (la integración llega en Fase 2; hoy no existe).
-- Corpus de Fase 1: únicamente Decreto 43/2015 y Decreto 594/1999.
+- Corpus de Fase 1: únicamente Decreto 43/2015. El Decreto 594/1999 se añade cuando la API de LeyChile active la key.
 - Las respuestas son texto generado; las citas, en cambio, se verifican contra el texto almacenado.
 
 ## Capturas
 
-### Uso básico - Pregunta específica - Pregunta fuera del alcance - Pregunta respondida con evidencia verificable
+### Chat con cita verificada y rechazo honesto
 ![Uso básico QuimioResponde](docs/screenshots/QuimioResponde1.jpg)
 
 ## Cómo correr localmente
@@ -77,7 +77,7 @@ Detalle completo en [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Estado
 
-Existe y funciona (Fase 1):
+Existe y funciona (Fase 1, desplegada):
 
 - API FastAPI con `/healthz`, `/readyz` y `POST /chat` en SSE, rate limit y errores `problem+json`.
 - Recuperación híbrida con pgvector y `tsvector` español sobre chunks por artículo y numeral.
@@ -85,13 +85,13 @@ Existe y funciona (Fase 1):
 - Ingesta idempotente desde el XML de LeyChile con cola acotada, reintentos y DLQ.
 - Web con streaming, citas numeradas expandibles, tarjeta de rechazo, tema claro/oscuro según el sistema y esqueleto de cold start.
 - 20 evals offline versionadas, tests unitarios y de integración con Testcontainers, CI en GitHub Actions.
+- Desplegado en Render (API) y Vercel (web). El plan gratuito de Render duerme la instancia tras 15 minutos de inactividad; la primera petición puede tardar 30-60 segundos en despertar.
 
 No existe todavía:
 
 - **Fase 2:** motor de reglas de compatibilidad en YAML, herramientas cerradas (`search_regulation`, `get_chemical_info`, `get_inventory`, `check_storage_compatibility`), agente LangGraph acotado, integración de solo lectura con ChemLab.
 - **Fase 3:** evals completas con LLM real, circuit breaker con proveedor de respaldo, streaming real del SDK, uso de tokens y costo por respuesta.
 - **Fase 4:** despliegue en AWS (SAM, API Gateway, Lambda, SQS + DLQ, EventBridge, S3, canary).
-- No hay despliegue en Render ni en Vercel.
 
 ## Atribución
 
