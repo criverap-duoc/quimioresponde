@@ -1,0 +1,41 @@
+cases:
+  - id: acido-base
+    items: [["Ácido clorhídrico", "7647-01-0"], ["Hidróxido de sodio", "1310-73-2"]]
+    status: INCOMPATIBLE
+    source: "D.S. 43/2015"
+  - id: acido-acido
+    items: [["Ácido clorhídrico", "7647-01-0"], ["Ácido sulfúrico", "7664-93-9"]]
+    status: SEPARATE
+    source: "D.S. 43/2015"
+  - id: inflamable-oxidante
+    items: [["Acetona", "67-64-1"], ["Permanganato de potasio", "7722-64-7"]]
+    status: INCOMPATIBLE
+    source: "D.S. 43/2015"
+  - id: acido-oxidante
+    items: [["Ácido nítrico", "7697-37-2"], ["Peróxido de hidrógeno", "7722-84-1"]]
+    status: INCOMPATIBLE
+    source: "D.S. 43/2015"
+  - id: acido-reactivo-al-agua
+    items: [["Ácido clorhídrico", "7647-01-0"], ["Sodio metálico", "7440-23-5"]]
+    status: INCOMPATIBLE
+    source: "D.S. 43/2015"
+  - id: base-inflamable-solo-osha
+    items: [["Hidróxido de amonio", null], ["Etanol", "64-17-5"]]
+    status: INCOMPATIBLE
+    source: "NFPA 400"
+  - id: oxidante-toxico-solo-osha
+    items: [["Permanganato de potasio", "7722-64-7"], ["Cianuro de sodio", "143-33-9"]]
+    status: INCOMPATIBLE
+    source: "NFPA 400"
+  - id: desconocido-con-acido
+    items: [["Muestra de laboratorio", null], ["Ácido nítrico", "7697-37-2"]]
+    status: UNKNOWN
+  - id: dos-desconocidos
+    items: [["Muestra A", null], ["Muestra B", null]]
+    status: UNKNOWN
+  - id: lista-vacia
+    items: []
+    status: COMPATIBLE
+  - id: un-solo-item
+    items: [["Ácido sulfúrico", "7664-93-9"]]
+    status: COMPATIBLE

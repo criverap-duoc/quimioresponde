@@ -1,0 +1,46 @@
+version: "D.S. 43/2015 Art. 17"
+source_url: "https://www.bcn.cl/leychile/navegar?idNorma=1088802"
+note: >-
+  Matriz de incompatibilidades transcrita de la imagen dto43-p12-1.jpeg que
+  publica LeyChile: el XML de la norma no incluye la matriz como texto.
+  Códigos de celda: 1 = precaución (revisar HDS), 2 = incompatibles,
+  3 = compatibles. Familias del motor frente a clase NU: ACID y BASE = 8,
+  FLAMMABLE = 3, OXIDIZER = 5.1, TOXIC = 6, WATER_REACTIVE = 4.3.
+  Se codifican las celdas con código 2 entre estas familias y las celdas 8x8
+  con código 1; las celdas con código 3 no se codifican, porque el Art. 17
+  hace prevalecer la HDS de cada sustancia.
+mapping:
+  ACID: "8"
+  BASE: "8"
+  FLAMMABLE: "3"
+  OXIDIZER: "5.1"
+  TOXIC: "6"
+  WATER_REACTIVE: "4.3"
+rules:
+  - pair: [ACID, BASE]
+    severity: INCOMPATIBLE
+    reason: >-
+      Clase 8 con clase 8, código 1: la matriz pide precaución y la HDS de
+      ácidos y bases declara incompatibilidad mutua por neutralización
+      exotérmica.
+    source: "D.S. 43/2015, Art. 17 (matriz de incompatibilidades y prelación de la HDS)"
+  - pair: [ACID, ACID]
+    severity: SEPARATE
+    reason: "Clase 8 con clase 8, código 1: precaución, revisar incompatibilidades individuales según HDS."
+    source: "D.S. 43/2015, Art. 17 (matriz de incompatibilidades, código 1)"
+  - pair: [OXIDIZER, FLAMMABLE]
+    severity: INCOMPATIBLE
+    reason: "Clase 5.1 con clase 3, código 2: riesgo de incendio o explosión."
+    source: "D.S. 43/2015, Art. 17 (matriz de incompatibilidades, código 2)"
+  - pair: [ACID, OXIDIZER]
+    severity: INCOMPATIBLE
+    reason: "Clase 8 con clase 5.1, código 2: oxidación violenta con desprendimiento de gases."
+    source: "D.S. 43/2015, Art. 17 (matriz de incompatibilidades, código 2)"
+  - pair: [ACID, WATER_REACTIVE]
+    severity: INCOMPATIBLE
+    reason: "Clase 8 con clase 4.3, código 2: liberación de hidrógeno inflamable."
+    source: "D.S. 43/2015, Art. 17 (matriz de incompatibilidades, código 2)"
+  - pair: [OXIDIZER, WATER_REACTIVE]
+    severity: INCOMPATIBLE
+    reason: "Clase 5.1 con clase 4.3, código 2: reacción violenta."
+    source: "D.S. 43/2015, Art. 17 (matriz de incompatibilidades, código 2)"

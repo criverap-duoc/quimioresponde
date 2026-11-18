@@ -1,0 +1,33 @@
+version: "OSHA 29 CFR 1910.106 / NFPA 400"
+source_url: "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-H/section-1910.106"
+note: >-
+  Reglas de respaldo para pares que la matriz del D.S. 43 no codifica; se
+  aplican solo cuando el par no tiene regla en decreto43_art17.yaml. Donde la
+  matriz chilena distingue solo clases NU (por ejemplo clase 8 con clase 3 da
+  código 3 "compatibles") aquí se aplica segregación de NFPA 400 y la HDS de
+  cada sustancia prevalece.
+rules:
+  - pair: [ACID, BASE]
+    severity: INCOMPATIBLE
+    reason: "Neutralización exotérmica entre corrosivos ácidos y alcalinos."
+    source: "NFPA 400 (segregación de incompatibles); OSHA 29 CFR 1910.106"
+  - pair: [ACID, FLAMMABLE]
+    severity: INCOMPATIBLE
+    reason: "El ácido (en especial si es oxidante) ataca al líquido inflamable y libera calor."
+    source: "NFPA 400 (segregación de incompatibles); OSHA 29 CFR 1910.106"
+  - pair: [ACID, OXIDIZER]
+    severity: INCOMPATIBLE
+    reason: "Mezcla de ácido con oxidante genera reacción violenta y gases tóxicos."
+    source: "NFPA 400 (segregación de incompatibles); OSHA 29 CFR 1910.106"
+  - pair: [BASE, FLAMMABLE]
+    severity: INCOMPATIBLE
+    reason: "Las bases fuertes reaccionan con inflamables sensibles liberando calor e hidrógeno."
+    source: "NFPA 400 (segregación de incompatibles); OSHA 29 CFR 1910.106"
+  - pair: [FLAMMABLE, OXIDIZER]
+    severity: INCOMPATIBLE
+    reason: "El oxidante alimenta la combustión del inflamable: incendio o explosión."
+    source: "NFPA 400 (segregación de incompatibles); OSHA 29 CFR 1910.106"
+  - pair: [OXIDIZER, TOXIC]
+    severity: INCOMPATIBLE
+    reason: "El oxidante puede liberar gases tóxicos del producto tóxico."
+    source: "NFPA 400 (segregación de incompatibles); OSHA 29 CFR 1910.106"
