@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     embedding_model: str = "gemini-embedding-001"
     embedding_dim: int = 768
     environment: Literal["local", "test", "staging", "production"] = "local"
+    chemlab_api_key: SecretStr
+    chemlab_base_url: str = "https://chemlab-vozz.onrender.com/api/public/inventory"
 
 
 @lru_cache
