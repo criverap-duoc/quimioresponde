@@ -33,7 +33,9 @@ def test_chunk_embedding_has_768_dimensions() -> None:
 
 def test_settings_keep_secret_out_of_repr() -> None:
     settings = Settings(
-        database_url="postgresql+asyncpg://user:pass@host/db", gemini_api_key="top-secret"
+        database_url="postgresql+asyncpg://user:pass@host/db",
+        gemini_api_key="top-secret",
+        chemlab_api_key="test"
     )
     assert settings.embedding_dim == 768
     assert settings.environment == "local"
