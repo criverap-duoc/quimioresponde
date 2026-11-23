@@ -3,7 +3,7 @@
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
-from pydantic.alias_generators import to_pascal
+from pydantic.alias_generators import to_camel
 
 from app.rules.engine import CompatibilityResult
 
@@ -50,8 +50,8 @@ class GetChemicalInfoOutput(_Strict):
 
 
 class InventoryItem(_Strict):
-    """Reactivo del inventario público de ChemLab (PublicReagentDto)."""
-    model_config = ConfigDict(extra="forbid", populate_by_name=True, alias_generator=to_pascal)
+    """Reactivo del inventario público de ChemLab (PublicReagentDto, camelCase)."""
+    model_config = ConfigDict(extra="forbid", populate_by_name=True, alias_generator=to_camel)
 
     id: str
     name: str

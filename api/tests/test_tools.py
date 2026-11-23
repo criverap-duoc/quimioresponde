@@ -27,18 +27,18 @@ from app.tools.schemas import (
 from app.tools.search_regulation import search_regulation
 
 _ITEM = {
-    "Id": "3f1c2b7e-0000-4000-8000-000000000001",
-    "Name": "Ácido clorhídrico",
-    "CasNumber": "7647-01-0",
-    "ChemicalFormula": "HCl",
-    "Quantity": 500.0,
-    "Unit": "mL",
-    "Location": "Estante A1",
-    "HazardLevel": 3,
-    "ExpiryDate": "2027-01-01T00:00:00Z",
-    "DaysUntilExpiry": 40,
-    "IsExpired": False,
-    "IsLowStock": True,
+    "id": "3f1c2b7e-0000-4000-8000-000000000001",
+    "name": "Ácido clorhídrico",
+    "casNumber": "7647-01-0",
+    "chemicalFormula": "HCl",
+    "quantity": 500.0,
+    "unit": "mL",
+    "location": "Estante A1",
+    "hazardLevel": 3,
+    "expiryDate": "2027-01-01T00:00:00Z",
+    "daysUntilExpiry": 40,
+    "isExpired": False,
+    "isLowStock": True,
 }
 
 
@@ -141,7 +141,7 @@ async def test_get_inventory_filtra_y_parsea(
 
     async def fake_get(self: httpx.AsyncClient, url: str, **kwargs: Any) -> httpx.Response:
         calls.append({"url": url, **kwargs})
-        payload = {"Data": [_ITEM], "Page": 1, "PageSize": 100, "TotalCount": 1, "TotalPages": 1}
+        payload = {"data": [_ITEM], "page": 1, "pageSize": 100, "totalCount": 1, "totalPages": 1}
         return _response(payload)
 
     monkeypatch.setattr(httpx.AsyncClient, "get", fake_get)
@@ -171,7 +171,7 @@ async def test_get_inventory_corta_a_tres_paginas(
     monkeypatch: pytest.MonkeyPatch, chemlab: None
 ) -> None:
     async def fake_get(self: httpx.AsyncClient, url: str, **kwargs: Any) -> httpx.Response:
-        return _response({"Data": [_ITEM] * 100, "TotalCount": 350})
+        return _response({"data": [_ITEM] * 100, "totalCount": 350})
 
     monkeypatch.setattr(httpx.AsyncClient, "get", fake_get)
 

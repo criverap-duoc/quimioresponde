@@ -4,7 +4,7 @@ from typing import Any
 
 import httpx
 from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_pascal
+from pydantic.alias_generators import to_camel
 
 from app.config import get_settings
 from app.tools.schemas import GetInventoryInput, GetInventoryOutput, InventoryItem, ToolError
@@ -21,8 +21,8 @@ _STATUS_ERRORS = {401: "chemlab_auth_failed", 503: "chemlab_unavailable"}
 
 
 class _Page(BaseModel):
-    """Página cruda del endpoint público: claves PascalCase, resto se ignora."""
-    model_config = ConfigDict(alias_generator=to_pascal, populate_by_name=True, extra="ignore")
+    """Página cruda del endpoint público: claves camelCase, resto se ignora."""
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="ignore")
 
     data: list[InventoryItem]
     total_count: int
