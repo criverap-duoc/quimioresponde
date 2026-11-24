@@ -16,9 +16,7 @@ _RETRYABLE = (errors.ServerError, httpx.TransportError)
 
 def _is_retryable(exc: BaseException) -> bool:
     """Reintenta 5xx, transporte y 429; el resto de 4xx no se reintenta."""
-    return isinstance(exc, _RETRYABLE) or (
-        isinstance(exc, errors.ClientError) and exc.code == 429
-    )
+    return isinstance(exc, _RETRYABLE) or (isinstance(exc, errors.ClientError) and exc.code == 429)
 
 
 class EmbeddingError(Exception):

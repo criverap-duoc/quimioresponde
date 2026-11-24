@@ -22,6 +22,7 @@ _STATUS_ERRORS = {401: "chemlab_auth_failed", 503: "chemlab_unavailable"}
 
 class _Page(BaseModel):
     """Página cruda del endpoint público: claves camelCase, resto se ignora."""
+
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="ignore")
 
     data: list[InventoryItem]

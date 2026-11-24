@@ -14,11 +14,13 @@ class ToolError(Exception):
 
 class _Strict(BaseModel):
     """Base de los contratos: rechaza campos desconocidos."""
+
     model_config = ConfigDict(extra="forbid")
 
 
 class HitOut(_Strict):
     """Trozo normativo citable, sin la puntuación interna de la fusión."""
+
     chunk_id: str
     article: str
     text: str
@@ -27,21 +29,25 @@ class HitOut(_Strict):
 
 class SearchRegulationInput(_Strict):
     """Busca normativa vigente (D.S. 43, D.S. 594) por texto libre."""
+
     query: str = Field(min_length=1, max_length=500)
 
 
 class SearchRegulationOutput(_Strict):
     """Trozos normativos recuperados, ordenados por relevancia."""
+
     hits: list[HitOut]
 
 
 class GetChemicalInfoInput(_Strict):
     """Identificación y peligro GHS de una sustancia por su número CAS."""
+
     cas: str = Field(min_length=1, max_length=32)
 
 
 class GetChemicalInfoOutput(_Strict):
     """Ficha resumida de PubChem; `source` indica el origen o el fallo."""
+
     name: str | None
     formula: str | None
     molecular_weight: float | None
@@ -51,6 +57,7 @@ class GetChemicalInfoOutput(_Strict):
 
 class InventoryItem(_Strict):
     """Reactivo del inventario público de ChemLab (PublicReagentDto, camelCase)."""
+
     model_config = ConfigDict(extra="forbid", populate_by_name=True, alias_generator=to_camel)
 
     id: str
@@ -69,6 +76,7 @@ class InventoryItem(_Strict):
 
 class GetInventoryInput(_Strict):
     """Consulta el inventario real de ChemLab con filtros opcionales."""
+
     expiring_in_days: int | None = Field(default=None, gt=0)
     expired: bool | None = None
     hazard_level: int | None = Field(default=None, ge=0, le=4)
@@ -78,6 +86,7 @@ class GetInventoryInput(_Strict):
 
 class GetInventoryOutput(_Strict):
     """Reactivos encontrados; `truncated` indica que hay más de los devueltos."""
+
     items: list[InventoryItem]
     total: int
     truncated: bool = False
@@ -85,9 +94,11 @@ class GetInventoryOutput(_Strict):
 
 class CheckStorageCompatibilityInput(_Strict):
     """Evalúa compatibilidad de almacenamiento para pares (nombre, CAS)."""
+
     items: list[tuple[str, str | None]]
 
 
 class CheckStorageCompatibilityOutput(_Strict):
     """Resultado determinista del motor de reglas YAML."""
+
     result: CompatibilityResult

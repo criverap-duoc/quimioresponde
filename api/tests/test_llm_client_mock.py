@@ -33,7 +33,7 @@ def _fake_genai(monkeypatch: pytest.MonkeyPatch, response: Any) -> _FakeClient:
 
 
 async def test_gemini_client_parsea_respuesta(monkeypatch: pytest.MonkeyPatch) -> None:
-    answer = Answer(answer="hola", citations=[], refusal_reason="prueba")
+    answer = Answer(answer="hola", citations=[], refusal_reason="prueba", evidence_source="none")
     fake = _fake_genai(monkeypatch, SimpleNamespace(parsed=answer, text=answer.model_dump_json()))
     client = GeminiClient(api_key="test-key", model=_MODEL)
 

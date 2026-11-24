@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from starlette.types import ExceptionHandler
 
+from app.agent.errors import AgentNoAnswer, AgentStepLimitError
 from app.llm.client import LLMRateLimited, LLMResponseError, LLMUnavailable
 from app.retrieval.bcn import NormaFetchError, NormaParseError
 
@@ -91,3 +92,13 @@ def install_error_handlers(app: FastAPI) -> None:
     )
     app.add_exception_handler(NormaFetchError, _fixed(502, "norma_fetch", "Norma no descargable"))
     app.add_exception_handler(NormaParseError, _fixed(500, "norma_parse", "Norma no procesable"))
+    app.add_exception_handler(
+        AgentStepLimitError,
+        _fixed(
+            503, "agent_step_limit", "Agente sin respuesta", "Se agotaron los pasos del agente."
+        ),
+    )
+    app.add_exception_handler(
+        AgentNoAnswer,
+        _fixed(500, "agent_no_answer", "Agente sin respuesta", "El agente no produjo respuesta."),
+    )

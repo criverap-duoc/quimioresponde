@@ -1,12 +1,11 @@
 """Endpoint /chat: streaming SSE, rechazo de citas, rate limit y CORS."""
 
 from collections.abc import AsyncIterator, Iterator
-from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
-from pydantic import SecretStr
 
+from app.agent.state import AgentState
 from app.db import get_session
 from app.llm.schemas import Answer, Citation
 from app.main import app
@@ -31,11 +30,30 @@ _ANSWER = Answer(
         Citation(chunk_id="c1", quote="ácidos y bases por separado"),
         Citation(chunk_id="c2", quote="Usar guantes y gafas"),
     ],
+    evidence_source="regulation",
 )
 
 
-async def _search(session: object, query: str, k: int = 10) -> list[Hit]:
-    return _HITS[:k]
+def _state(
+    answer: Answer, hits: list[Hit], tools: tuple[str, ...] = ("search_regulation",)
+) -> AgentState:
+    return AgentState(
+        messages=[{"role": "user", "content": "?"}],
+        steps=1,
+        tools_called=list(tools),
+        hits=hits,
+        decision=None,
+        final_answer=answer,
+    )
+
+
+def _agent(
+    answer: Answer, hits: list[Hit], tools: tuple[str, ...] = ("search_regulation",)
+) -> object:
+    async def _run(question: str, session: object) -> AgentState:
+        return _state(answer, hits, tools)
+
+    return _run
 
 
 async def _session() -> AsyncIterator[object]:
@@ -64,16 +82,6 @@ class _Traces:
         return None
 
 
-def _gemini(answer: Answer) -> type:
-    class _Fake:
-        def __init__(self, **_: object) -> None: ...
-
-        async def complete(self, prompt: str, schema: type[object]) -> Answer:
-            return answer
-
-    return _Fake
-
-
 _Client = tuple[TestClient, _Traces]
 
 
@@ -82,10 +90,7 @@ def client(monkeypatch: pytest.MonkeyPatch) -> Iterator[_Client]:
     chat.limiter.reset()
     app.dependency_overrides[get_session] = _session
     traces = _Traces()
-    settings = SimpleNamespace(gemini_api_key=SecretStr("test-key"), gemini_model="test-model")
-    monkeypatch.setattr(chat, "search", _search)
-    monkeypatch.setattr(chat, "get_settings", lambda: settings)
-    monkeypatch.setattr(chat, "GeminiClient", _gemini(_ANSWER))
+    monkeypatch.setattr(chat, "run_agent", _agent(_ANSWER, _HITS))
     monkeypatch.setattr(chat, "get_sessionmaker", lambda: traces)
     yield TestClient(app), traces
     app.dependency_overrides.clear()
@@ -102,6 +107,7 @@ def test_chat_streaming_exitoso(client: _Client) -> None:
     assert text.index("event: answer") < text.index("event: done")
     assert traces.items[0].citation_ids == ["c1", "c2"]
     assert traces.items[0].answer == _ANSWER.answer
+    assert traces.items[0].tools_called == ["search_regulation"]
 
 
 def test_chat_cita_invalida_devuelve_error(
@@ -111,8 +117,9 @@ def test_chat_cita_invalida_devuelve_error(
     invalida = Answer(
         answer="Dato inventado.",
         citations=[Citation(chunk_id="c1", quote="frase inexistente")],
+        evidence_source="regulation",
     )
-    monkeypatch.setattr(chat, "GeminiClient", _gemini(invalida))
+    monkeypatch.setattr(chat, "run_agent", _agent(invalida, _HITS))
 
     text = http.post("/chat", json=_QUESTION).text
 
@@ -120,6 +127,25 @@ def test_chat_cita_invalida_devuelve_error(
     assert "event: answer" not in text
     assert "citation_rejected" in text
     assert "unverifiable_quote" in text
+
+
+def test_chat_respuesta_de_inventario_sin_citas(
+    client: _Client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    http, traces = client
+    inventario = Answer(
+        answer="No hay reactivos vencidos en el inventario.",
+        citations=[],
+        evidence_source="inventory",
+    )
+    monkeypatch.setattr(chat, "run_agent", _agent(inventario, [], tools=("get_inventory",)))
+
+    text = http.post("/chat", json=_QUESTION).text
+
+    assert "event: answer" in text
+    assert "citation_rejected" not in text
+    assert traces.items[0].citation_ids == []
+    assert traces.items[0].tools_called == ["get_inventory"]
 
 
 def test_chat_rate_limit(client: _Client) -> None:

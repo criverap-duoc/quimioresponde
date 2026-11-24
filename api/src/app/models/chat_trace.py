@@ -17,6 +17,7 @@ class ChatTrace(Base):
     question: Mapped[str] = mapped_column(Text)
     answer: Mapped[str] = mapped_column(Text)
     citation_ids: Mapped[list[str]] = mapped_column(JSONB, default=list)
+    tools_called: Mapped[list[str]] = mapped_column(JSONB, default=list)
     tokens_in: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     tokens_out: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     cost_usd: Mapped[Decimal] = mapped_column(

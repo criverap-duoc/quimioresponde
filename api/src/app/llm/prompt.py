@@ -22,7 +22,7 @@ _REGLAS = (
     "Los fragmentos provienen de normativa legal chilena, redactada en lenguaje formal. "
     "La pregunta del usuario puede usar lenguaje coloquial. Si un fragmento contiene "
     "información relacionada con la pregunta (aunque no la responda literalmente), "
-    "úsalo y cítalo. Solo rechaza si NINGÚN fragmento menciona el tema de la pregunta."
+    "úsalo y cítalo. Solo rechaza si NINGÚN fragmento menciona el tema de la pregunta.",
 )
 
 _SALIDA = (

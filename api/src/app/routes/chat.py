@@ -1,4 +1,4 @@
-"""Endpoint `/chat`: recupera, verifica citas y streamea la respuesta por SSE."""
+"""Endpoint `/chat`: ejecuta el agente, verifica citas y streamea la respuesta por SSE."""
 
 import json
 import logging
@@ -16,18 +16,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import EventSourceResponse
 from starlette.responses import Response
 
-from app.config import get_settings
+from app.agent.graph import run_agent
 from app.db import get_session, get_sessionmaker
 from app.errors import problem_body
-from app.llm.client import GeminiClient, LLMClient
-from app.llm.prompt import build_prompt
 from app.llm.schemas import Answer
 from app.llm.verifier import CitationRejected, verify
 from app.models.chat_trace import ChatTrace
-from app.retrieval.search import search
 
 _CHUNK_SIZE = 20
-_TOP_K = 5
 logger = logging.getLogger(__name__)
 
 limiter = Limiter(key_func=get_remote_address)
@@ -48,25 +44,20 @@ async def chat(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> Response:
     """Responde con citas verificadas, en streaming SSE."""
-    hits = await search(session, payload.question, k=_TOP_K)
-    answer = cast(Answer, await _client().complete(build_prompt(payload.question, hits), Answer))
+    state = await run_agent(payload.question, session)
+    answer = cast(Answer, state["final_answer"])
     try:
-        verify(answer, hits)
+        verify(answer, state["hits"])
     except CitationRejected as exc:
         return EventSourceResponse(_stream_error(request, exc))
-    return EventSourceResponse(_stream_answer(answer, uuid.uuid4().hex, payload.question))
-
-
-def _client() -> LLMClient:
-    """Cliente Gemini configurado por entorno."""
-    settings = get_settings()
-    return GeminiClient(
-        api_key=settings.gemini_api_key.get_secret_value(), model=settings.gemini_model
+    request_id = uuid.uuid4().hex
+    return EventSourceResponse(
+        _stream_answer(answer, request_id, payload.question, state["tools_called"])
     )
 
 
 async def _stream_answer(
-    answer: Answer, request_id: str, question: str
+    answer: Answer, request_id: str, question: str, tools_called: list[str]
 ) -> AsyncIterator[dict[str, str]]:
     """Emite citas, la respuesta troceada y el cierre; luego persiste la traza."""
     citations = [citation.model_dump() for citation in answer.citations]
@@ -77,7 +68,7 @@ async def _stream_answer(
         yield {"event": "answer", "data": text[start : start + _CHUNK_SIZE]}
     # El SDK aún no expone uso de tokens estable; se rellena en Fase 3.
     yield {"event": "done", "data": "{}"}
-    await _record_trace(request_id, question, answer)
+    await _record_trace(request_id, question, answer, tools_called)
 
 
 async def _stream_error(request: Request, exc: CitationRejected) -> AsyncIterator[dict[str, str]]:
@@ -88,13 +79,16 @@ async def _stream_error(request: Request, exc: CitationRejected) -> AsyncIterato
     yield {"event": "error", "data": json.dumps(body, ensure_ascii=False)}
 
 
-async def _record_trace(request_id: str, question: str, answer: Answer) -> None:
+async def _record_trace(
+    request_id: str, question: str, answer: Answer, tools_called: list[str]
+) -> None:
     """Guarda la traza con sesión propia: la de la request ya se cerró."""
     trace = ChatTrace(
         request_id=request_id,
         question=question,
         answer=answer.answer,
         citation_ids=[citation.chunk_id for citation in answer.citations],
+        tools_called=tools_called,
         cost_usd=Decimal(0),
     )
     try:

@@ -72,7 +72,12 @@ def _refusal_results(cases: list[dict[str, Any]]) -> list[CaseResult]:
     results = []
     for case in cases:
         expected = case["expected_refusal_reason"]
-        answer = Answer(answer=case["question"], citations=[], refusal_reason=expected)
+        answer = Answer(
+            answer=case["question"],
+            citations=[],
+            refusal_reason=expected,
+            evidence_source="none",
+        )
         try:
             verify(answer, [])
             actual = answer.refusal_reason or ""
@@ -95,6 +100,7 @@ def _citation_results(cases: list[dict[str, Any]]) -> list[CaseResult]:
                 for item in case["citations"]
             ],
             refusal_reason=case.get("refusal_reason"),
+            evidence_source="regulation",
         )
         try:
             verify(answer, hits)
