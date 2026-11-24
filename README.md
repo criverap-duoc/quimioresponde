@@ -28,12 +28,12 @@ Asistente técnico **referencial** de seguridad en laboratorios químicos para C
 ## Capturas
 
 ### 1. Agente con herramientas: inventario y PubChem
-![Inventario y PubChem](docs/screenshots/QuimioResponde1.gif)
+![Inventario y PubChem](docs/screenshots/Quimioresponde1.gif)
 
 Tres consultas seguidas: reactivos próximos a vencer (llama a `get_inventory`), peso molecular y punto de ebullición de un reactivo por nombre comercial (resuelve el CAS y consulta PubChem), e insumos ácidos con sus características (inventario con filtro por familia). La traza de herramientas bajo cada respuesta muestra qué consultó el agente.
 
 ### 2. Compatibilidad determinista y normativa combinada
-![Compatibilidad y normativa](docs/screenshots/QuimioResponde2.gif)
+![Compatibilidad y normativa](docs/screenshots/Quimioresponde2.gif)
 
 Una consulta de experimento que obliga al agente a combinar inventario, normativa y compatibilidad, y una pregunta directa de compatibilidad. La tarjeta `INCOMPATIBLE` la produce el motor determinista de reglas (D.S. 43/2015, Art. 17), no el LLM: el modelo solo explica el resultado y cita la fuente.
 
