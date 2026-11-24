@@ -1,7 +1,7 @@
 """Nodos del grafo: la decisión del LLM y la ejecución de la herramienta."""
 
-from asyncio.log import logger
 import json
+import logging
 from typing import cast
 
 from pydantic import BaseModel
@@ -19,6 +19,7 @@ from app.llm.client import LLMClient
 from app.retrieval.search import Hit
 from app.tools.schemas import SearchRegulationOutput, ToolError
 
+logger = logging.getLogger(__name__)
 MAX_STEPS = 6
 _MAX_RESULT = 4000
 
