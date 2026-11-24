@@ -67,7 +67,10 @@ async def _stream_answer(
     for start in range(0, len(text), _CHUNK_SIZE):
         yield {"event": "answer", "data": text[start : start + _CHUNK_SIZE]}
     # El SDK aún no expone uso de tokens estable; se rellena en Fase 3.
-    yield {"event": "done", "data": "{}"}
+    yield {
+        "event": "done",
+        "data": json.dumps({"tools_called": tools_called}, ensure_ascii=False),
+    }
     await _record_trace(request_id, question, answer, tools_called)
 
 

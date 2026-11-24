@@ -105,6 +105,7 @@ def test_chat_streaming_exitoso(client: _Client) -> None:
     assert response.status_code == 200
     assert text.index("event: citations") < text.index("event: answer")
     assert text.index("event: answer") < text.index("event: done")
+    assert '"tools_called": ["search_regulation"]' in text.split("event: done", 1)[1]
     assert traces.items[0].citation_ids == ["c1", "c2"]
     assert traces.items[0].answer == _ANSWER.answer
     assert traces.items[0].tools_called == ["search_regulation"]

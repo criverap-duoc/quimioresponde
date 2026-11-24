@@ -7,7 +7,7 @@ export type ProblemDetail = { type: string; title: string; status: number; detai
 export type ChatEvent =
   | { type: "citations"; data: Citation[] }
   | { type: "answer"; data: string }
-  | { type: "done" }
+  | { type: "done"; tools_called: string[] }
   | { type: "error"; data: ProblemDetail };
 
 const BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/+$/, "");
@@ -60,9 +60,20 @@ function parseEvent(block: string): ChatEvent | null {
   const payload = data.join("\n");
   if (name === "citations") return { type: "citations", data: JSON.parse(payload) as Citation[] };
   if (name === "answer") return { type: "answer", data: payload };
-  if (name === "done") return { type: "done" };
+  if (name === "done") return { type: "done", tools_called: toolsCalled(payload) };
   if (name === "error") return { type: "error", data: JSON.parse(payload) as ProblemDetail };
   return null;
+}
+
+function toolsCalled(payload: string): string[] {
+  try {
+    const parsed = JSON.parse(payload) as { tools_called?: unknown };
+    return Array.isArray(parsed.tools_called)
+      ? parsed.tools_called.filter((name): name is string => typeof name === "string")
+      : [];
+  } catch {
+    return [];
+  }
 }
 
 async function problemFromResponse(response: Response): Promise<ProblemDetail> {

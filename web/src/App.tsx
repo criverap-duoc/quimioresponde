@@ -6,6 +6,7 @@ import { ColdStartSkeleton } from "./components/ColdStartSkeleton";
 import { EmptyState } from "./components/EmptyState";
 import { Footer } from "./components/Footer";
 import { streamChat, type ProblemDetail } from "./lib/api";
+import { classifyAnswer } from "./lib/evidence";
 
 type Status = "idle" | "streaming" | "error";
 
@@ -59,6 +60,12 @@ export default function App() {
           setProblem(event.data);
           setStatus("error");
         } else {
+          const toolsCalled = event.tools_called;
+          updateAssistant((message) => ({
+            ...message,
+            tools_called: toolsCalled,
+            ...classifyAnswer(message.text, message.citations, toolsCalled),
+          }));
           setStatus("idle");
         }
       }

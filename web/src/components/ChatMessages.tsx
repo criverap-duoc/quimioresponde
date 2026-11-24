@@ -2,9 +2,21 @@ import { AlertTriangle, ShieldAlert } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type { Citation, ProblemDetail } from "../lib/api";
+import { refusalTone, type EvidenceSource } from "../lib/evidence";
 import { CitationBadge } from "./CitationBadge";
+import { CompatibilityCard } from "./CompatibilityCard";
+import { RefusalCard } from "./RefusalCard";
+import { ToolTrace } from "./ToolTrace";
 
-export type Message = { id: string; role: "user" | "assistant"; text: string; citations: Citation[] };
+export type Message = {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  citations: Citation[];
+  tools_called?: string[];
+  evidence_source?: EvidenceSource;
+  refusal_reason?: string | null;
+};
 
 const MARKER = /\[(\d+)\]/g;
 
@@ -94,15 +106,21 @@ export function ChatMessages({ messages, problem, streaming }: Props) {
           );
         }
         if (message.text === "" && message.citations.length === 0 && !streaming) return null;
+        const refusal = message.evidence_source === "none" && Boolean(message.refusal_reason);
         return (
           <div key={message.id} className="space-y-2 rounded-lg border border-border px-3 py-2">
             <h2 className="sr-only">Respuesta del asistente</h2>
-            <div className="text-sm leading-relaxed whitespace-pre-wrap text-fg">
-              {renderAnswer(message, openKey, setOpenKey)}
-              {streaming && position === messages.length - 1 && (
-                <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-fg align-text-bottom" aria-hidden="true" />
-              )}
-            </div>
+            {refusal ? (
+              <RefusalCard reason={message.refusal_reason ?? ""} tone={refusalTone(message.refusal_reason ?? "")} />
+            ) : (
+              <div className="text-sm leading-relaxed whitespace-pre-wrap text-fg">
+                {renderAnswer(message, openKey, setOpenKey)}
+                {streaming && position === messages.length - 1 && (
+                  <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-fg align-text-bottom" aria-hidden="true" />
+                )}
+              </div>
+            )}
+            {message.evidence_source === "compatibility" && <CompatibilityCard text={message.text} />}
             {message.citations.length > 0 && (
               <div className="space-y-1">
                 <p className="text-xs font-medium tracking-wide text-muted uppercase">Fuentes citadas</p>
@@ -120,6 +138,7 @@ export function ChatMessages({ messages, problem, streaming }: Props) {
                 })}
               </div>
             )}
+            <ToolTrace tools_called={message.tools_called} />
           </div>
         );
       })}
