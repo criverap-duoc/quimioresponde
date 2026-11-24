@@ -1,5 +1,6 @@
 """Nodos del grafo: la decisión del LLM y la ejecución de la herramienta."""
 
+from asyncio.log import logger
 import json
 from typing import cast
 
@@ -92,6 +93,7 @@ async def tools_node(state: AgentState, session: AsyncSession) -> AgentState:
     name = decision.tool_name or ""
     args = decision.tool_args.model_dump(exclude_none=True) if decision.tool_args else {}
     try:
+        logger.warning("tool_call name=%s args=%s", name, args)
         output = await invoke_tool(name, args, session)
         content: dict[str, object] = {"tool": name, "result": output.model_dump(mode="json")}
         state["hits"] = [*state["hits"], *_evidence(output)]
